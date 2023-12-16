@@ -23,5 +23,6 @@ impl Agent {
     pub fn solve(&self) {
         self.rack.display();
         self.board.display();
+        println!("\n...beep boop...solving...");
     }
 }
