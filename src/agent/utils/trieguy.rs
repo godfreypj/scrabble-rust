@@ -28,23 +28,42 @@ pub(crate) struct TrieTree {
 
 impl TrieTree {
     pub fn new() -> Self {
-        let root = TrieTree::load_dictionary("src/agent/dictionary.txt");
+        let root = TrieTree::load_dictionary("src/data/dictionary.txt");
         TrieTree {
             root: Box::new(root),
         }
     }
 
+    /// Instantiates the Trie Tree from a text file.
+    /// ## Overview
+    /// Given a text file this function will open and
+    /// create a new reader object. It will then iterate
+    /// over each line and convert it to a String. It will
+    /// then pass the word into the insert function.
+    /// # Arguments
+    /// * `filename`: The path and name of the text file to be read.
+    /// # Returns
+    /// * `root`: The root node of the trie.
     fn load_dictionary(filename: &str) -> TrieNode {
         let file = File::open(filename).expect("Failed to open dictionary file");
         let reader = BufReader::new(file);
         let mut root = TrieNode::new();
         for line in reader.lines() {
-            let word = line.unwrap().trim().to_string(); // Convert each line to a String
+            let word = line.unwrap().trim().to_string();
             TrieTree::insert(&mut root, &word);
         }
         root
     }
 
+    /// Inserts a given word into the trie data structure.
+    /// ## Overview
+    /// This function iterates over a given letter, for each
+    /// letter, it checks if the letter is in the trie. If 
+    /// it is not, it adds the letter to the trie. The last node
+    /// is marked as the end of the word.
+    /// # Arguments
+    /// * `root`: The root node of the trie.
+    /// * `word`: The word to be inserted.
     pub fn insert(root: &mut TrieNode, word: &str) {
         let mut node = root;
         for ch in word.chars() {
@@ -54,6 +73,16 @@ impl TrieTree {
     }
     
 
+    /// Searches for a given word in the trie.
+    /// ## Overview
+    /// given a word, iterate over each character
+    /// working your way down the tree. If the character
+    /// is not in the trie, return false. Otherwise 
+    /// return true.
+    /// # Arguments
+    /// * `word`: The word to be searched for.
+    /// # Returns
+    /// * `bool`: True if the word is in the trie, false otherwise.
     pub fn search(&mut self, word: &str) -> bool {
         let mut node = &self.root;
         for ch in word.chars() {

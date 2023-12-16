@@ -1,7 +1,7 @@
 mod agent;
 mod board;
 use agent::agent::Agent;
-use agent::trieguy::TrieTree;
+use agent::utils::trieguy::TrieTree;
 
 fn main() {
     let agent = Agent::new();
