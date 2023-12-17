@@ -42,7 +42,7 @@ impl Rack {
             WeightedGroup::new(vec!['N', 'R', 'T'], 6),
             WeightedGroup::new(vec!['O'], 8),
             WeightedGroup::new(vec!['A', 'I'], 9),
-            WeightedGroup::new(vec!['E'], 12)
+            WeightedGroup::new(vec!['E'], 12),
         ];
         let mut bag: Vec<char> = Vec::new();
         // Iterate through weighted groups, adding each letter in each group
@@ -57,10 +57,17 @@ impl Rack {
         for _ in 0..7 {
             // Shuffle the bag
             bag.shuffle(&mut rand::thread_rng());
-            // Choose a letter from the first entry
-            let letter: char = bag[0];
-            // Push it to the rack
-            letters.push(letter);
+            // Iterate over the shuffled bag
+            for ltr in &bag {
+                // If the letter is a wildcard & letters already contains 2
+                // pick the next letter
+                if *ltr == '_' && letters.iter().filter(|&x| *x == '_').count() > 1 {
+                    continue;
+                } else {
+                    letters.push(*ltr);
+                    break;
+                }
+            }
         }
         Rack { letters }
     }

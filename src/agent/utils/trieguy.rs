@@ -8,6 +8,10 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufReader, BufRead};
 
+/// ## Overview
+/// Each node of the TrieGuy contains a child, or it
+/// contains the end of the word boolean set to true.
+/// The children are stored in a HashMap.
 pub struct TrieNode {
     pub children: HashMap<char, Box<TrieNode>>,
     pub is_end_of_word: bool,
