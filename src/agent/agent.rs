@@ -7,7 +7,7 @@ use super::rack;
 ///
 /// Module: Agent module. Every agent instantiates a Rack, Board & then solves.
 pub struct Agent {
-    rack: Rack,
+    pub rack: Rack,
     pub board: Board,
 }
 

@@ -7,16 +7,65 @@ use rand::seq::SliceRandom;
 /// that represent the likelyhood of randomly choosing them from a real bag of scrabble letters.
 pub struct Rack {
     pub letters: Vec<char>,
+    pub weighted_groups: Vec<WeightedGroup>,
 }
 
-struct WeightedGroup {
-    letters: Vec<char>,
-    weight: u32,
+pub struct WeightedGroup {
+    pub letters: Vec<char>,
+    pub weight: u32,
 }
 
 impl WeightedGroup {
     fn new(letters: Vec<char>, weight: u32) -> Self {
         WeightedGroup { letters, weight }
+    }
+}
+
+impl Clone for WeightedGroup {
+    fn clone(&self) -> Self {
+        Self {
+            letters: self.letters.clone(),
+            weight: self.weight,
+        }
+    }
+}
+
+pub struct WeightedGroups {
+    weighted_groups: Vec<WeightedGroup>
+}
+
+impl Clone for WeightedGroups {
+    fn clone(&self) -> Self {
+        Self {
+            weighted_groups: self.weighted_groups.clone()
+        }
+    }
+}
+
+impl WeightedGroups {
+    fn new() -> Self {
+        let weighted_groups = vec![
+            WeightedGroup::new(vec!['J', 'K', 'U', 'X', 'Z'], 1),
+            WeightedGroup::new(vec!['B', 'C', 'F', 'H', 'M', 'P', 'V', 'W', 'Y', '_'], 2),
+            WeightedGroup::new(vec!['G'], 3),
+            WeightedGroup::new(vec!['D', 'L', 'S', 'U'], 4),
+            WeightedGroup::new(vec!['N', 'R', 'T'], 6),
+            WeightedGroup::new(vec!['O'], 8),
+            WeightedGroup::new(vec!['A', 'I'], 9),
+            WeightedGroup::new(vec!['E'], 12),
+        ];
+        WeightedGroups { weighted_groups }
+    }
+}
+
+// ... your existing code
+
+impl Clone for Rack {
+    fn clone(&self) -> Self {
+        Self {
+            letters: self.letters.clone(),
+            weighted_groups: self.weighted_groups.clone(),
+        }
     }
 }
 
@@ -34,20 +83,11 @@ impl Rack {
     /// ```
     pub fn new() -> Rack {
         let mut letters: Vec<char> = Vec::new();
-        let weighted_groups = vec![
-            WeightedGroup::new(vec!['J', 'K', 'U', 'X', 'Z'], 1),
-            WeightedGroup::new(vec!['B', 'C', 'F', 'H', 'M', 'P', 'V', 'W', 'Y', '_'], 2),
-            WeightedGroup::new(vec!['G'], 3),
-            WeightedGroup::new(vec!['D', 'L', 'S', 'U'], 4),
-            WeightedGroup::new(vec!['N', 'R', 'T'], 6),
-            WeightedGroup::new(vec!['O'], 8),
-            WeightedGroup::new(vec!['A', 'I'], 9),
-            WeightedGroup::new(vec!['E'], 12),
-        ];
+        let weighted_groups = WeightedGroups::new().weighted_groups;
         let mut bag: Vec<char> = Vec::new();
         // Iterate through weighted groups, adding each letter in each group
         // as many times as its weight
-        for entry in weighted_groups {
+        for entry in &weighted_groups {
             for _ in 0..entry.weight {
                 for letter in &entry.letters {
                     bag.push(*letter);
@@ -69,9 +109,32 @@ impl Rack {
                 }
             }
         }
-        Rack { letters }
+        Rack {
+            letters,
+            weighted_groups,
+        }
     }
 
+    /// ### Overview
+    /// This function iterates over the rack, finding each
+    /// letter in its weighted group. The letter with the
+    /// highest score is doubled, the rest are added.
+    pub fn max_score(&self) -> u32 {
+        let mut score: u32 = 0;
+        let mut max_score: u32 = 0;
+        for letter in &self.letters {
+            for group in &self.weighted_groups {
+                if group.letters.contains(&letter) {
+                    if max_score < group.weight {
+                        max_score = group.weight;
+                    }
+                    score += group.weight;
+                }
+            }
+        }
+        score += max_score;
+        score
+    }
     pub fn display(&self) {
         println!("\n\nRack:");
         for c in &self.letters {
