@@ -7,7 +7,7 @@ use rand::seq::SliceRandom;
 /// that represent the likelyhood of randomly choosing them from a real bag of scrabble letters.
 pub struct Rack {
     pub letters: Vec<char>,
-    pub weighted_groups: Vec<WeightedGroup>,
+    pub weighted_groups: WeightedGroups,
 }
 
 pub struct WeightedGroup {
@@ -31,7 +31,7 @@ impl Clone for WeightedGroup {
 }
 
 pub struct WeightedGroups {
-    weighted_groups: Vec<WeightedGroup>
+    pub weighted_groups: Vec<WeightedGroup>
 }
 
 impl Clone for WeightedGroups {
@@ -39,6 +39,13 @@ impl Clone for WeightedGroups {
         Self {
             weighted_groups: self.weighted_groups.clone()
         }
+    }
+}
+
+impl Iterator for WeightedGroups {
+    type Item = WeightedGroup;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.weighted_groups.pop() // Remove and return the last weighted group
     }
 }
 
@@ -56,9 +63,16 @@ impl WeightedGroups {
         ];
         WeightedGroups { weighted_groups }
     }
+    pub fn get_weight(&self, letter: char) -> u32 {
+        for group in &self.weighted_groups {
+            if group.letters.contains(&letter) {
+                return group.weight;
+            }
+        }
+        0
+    }
 }
 
-// ... your existing code
 
 impl Clone for Rack {
     fn clone(&self) -> Self {
@@ -83,11 +97,11 @@ impl Rack {
     /// ```
     pub fn new() -> Rack {
         let mut letters: Vec<char> = Vec::new();
-        let weighted_groups = WeightedGroups::new().weighted_groups;
+        let weighted_groups = WeightedGroups::new();
         let mut bag: Vec<char> = Vec::new();
         // Iterate through weighted groups, adding each letter in each group
         // as many times as its weight
-        for entry in &weighted_groups {
+        for entry in &weighted_groups.weighted_groups {
             for _ in 0..entry.weight {
                 for letter in &entry.letters {
                     bag.push(*letter);
@@ -123,7 +137,7 @@ impl Rack {
         let mut score: u32 = 0;
         let mut max_score: u32 = 0;
         for letter in &self.letters {
-            for group in &self.weighted_groups {
+            for group in &self.weighted_groups.weighted_groups {
                 if group.letters.contains(&letter) {
                     if max_score < group.weight {
                         max_score = group.weight;

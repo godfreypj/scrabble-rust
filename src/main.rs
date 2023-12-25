@@ -1,18 +1,15 @@
 mod agent;
 mod board;
 use agent::agent::Agent;
-use agent::utils::trieguy::TrieTree;
 
-use crate::agent::utils::anagram::Anagrams;
+use crate::agent::utils::anagram::Move;
 
 fn main() {
     let agent = Agent::new();
-    let mut rack = agent.rack.clone();
-    let mut tree = TrieTree::new();
-    let mut anagrams = Anagrams::new(rack.clone());
-    anagrams.generate("".to_string(), &mut rack, &mut tree);
-    for word in anagrams {
-        println!("{:?}", word);
-    }
-    agent.solve();
+    println!("\n\n===========SCRABBLE===========\n\n");
+    let best_move: Move = agent.solve();
+    println!(
+        "Best move: {:?}\nStarting Square: {:?}",
+        best_move.word, best_move.starting_element
+    )
 }

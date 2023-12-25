@@ -31,4 +31,7 @@ pub struct Board {
         }
         println!("\n\n--\n");
     }
+    pub fn make_move(&mut self, word: &str) {
+      println!("{:?}", word);
+    }
   }
