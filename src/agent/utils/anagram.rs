@@ -5,7 +5,7 @@
 /// anagram & to estimate the score of a given word are also provided.
 use std::{cmp::Ordering, collections::HashMap};
 use crate::agent::rack::Rack;
-use super::trieguy::TrieTree;
+use super::{trieguy::TrieTree, scores::ScoreGroups};
 #[derive(Debug)]
 
 // ## Move
@@ -89,13 +89,14 @@ impl Anagrams {
     fn estimate_score(&self, word: String) -> u32 {
         let mut score: u32 = 0;
         let mut local_max: u32 = 0;
+        let score_groups = ScoreGroups::new();
         for letter in word.chars() {
-            for group in &self.rack.weighted_groups.weighted_groups {
+            for group in score_groups.clone() {
                 if group.letters.contains(&letter) {
-                    if local_max < group.weight {
-                        local_max = group.weight;
+                    if local_max < group.score {
+                        local_max = group.score;
                     }
-                    score += group.weight;
+                    score += group.score;
                 }
             }
         }
@@ -157,8 +158,9 @@ impl Anagrams {
         let anagram = self.get_best_anagram().unwrap();
         let word = anagram.word.clone();
         let mut index_vs_weight_hashmap: HashMap<usize, u32> = HashMap::new();
+        let score_groups = ScoreGroups::new();
         for letter in word.chars() {
-            let letter_weight = self.rack.weighted_groups.get_weight(letter);
+            let letter_weight = score_groups.get_score(letter);
             let index = word.chars().position(|c| c == letter).unwrap();
             index_vs_weight_hashmap.insert(index, letter_weight);
         }
