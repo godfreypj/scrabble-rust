@@ -7,6 +7,8 @@
 // the first move can only be horizontal, so the board is just the middle 13
 // squares of a standard Scrabble Board.
 
+use crate::agent::utils::anagram::Anagram;
+
 pub struct Board {
     spaces: Vec<Option<char>>,
   }
@@ -31,7 +33,11 @@ pub struct Board {
         }
         println!("\n\n--\n");
     }
-    pub fn make_move(&mut self, word: &str) {
-      println!("{:?}", word);
+    pub fn make_move(&mut self, anagram: &Anagram, mut starting_element: u32) {
+      let word = anagram.word.clone();
+      for letter in word.chars() {
+        self.spaces[starting_element as usize] = Some(letter);
+        starting_element += 1;
+      }
     }
   }

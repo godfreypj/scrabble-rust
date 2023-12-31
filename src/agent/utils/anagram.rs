@@ -5,30 +5,13 @@
 /// anagram & to estimate the score of a given word are also provided.
 use std::{cmp::Ordering, collections::HashMap};
 use crate::agent::rack::Rack;
-use super::{trieguy::TrieTree, scores::ScoreGroups};
-#[derive(Debug)]
+use super::{trieguy::TrieTree, scores::ScoreGroups, legalmove::Move};
 
-// ## Move
-// A simple struct that holds the result of
-// the find_best_move() function
-pub struct Move {
-    pub word: String,
-    pub starting_element: u32,
-}
-
-impl Move {
-    pub fn new(word: String, starting_element: u32) -> Self {
-        Move {
-            word,
-            starting_element,
-        }
-    }
-}
 /// ## Anagram
 /// A single anagram is made up of the word (String)
 /// and the score
 pub struct Anagram {
-    word: String,
+    pub word: String,
     score: u32,
 }
 
@@ -42,7 +25,6 @@ impl Anagram {
 /// A list of anagrams is made up of a vector of anagrams
 pub struct Anagrams {
     anagrams: Vec<Anagram>,
-    rack: Rack,
 }
 
 impl Iterator for Anagrams {
@@ -61,10 +43,9 @@ impl Iterator for Anagrams {
 /// let winner = anagrams.get_best_anagram()
 /// println!("Winner: {}", winner.word)
 impl Anagrams {
-    pub fn new(rack: Rack) -> Self {
+    pub fn new() -> Self {
         Anagrams {
             anagrams: Vec::new(),
-            rack: rack.clone(),
         }
     }
     /// ## get_best_anagram()
@@ -90,6 +71,7 @@ impl Anagrams {
         let mut score: u32 = 0;
         let mut local_max: u32 = 0;
         let score_groups = ScoreGroups::new();
+        // If the word is less than 
         for letter in word.chars() {
             for group in score_groups.clone() {
                 if group.letters.contains(&letter) {
@@ -166,16 +148,16 @@ impl Anagrams {
         }
         let highest_weighted_index = index_vs_weight_hashmap.iter().max_by_key(|x| x.1).unwrap().0;
         if word.len() < 5 {
-            return Move::new(word, 6);
+            return Move::new(anagram.clone(), 6);
         }
         // If its 5 characters
         // Check the first and last letter, whichever is higher determines the placement
         // If its the first letter, place starting on element 3; otherwise start on center square
         else if word.len() == 5 {
             if *highest_weighted_index == 0 {
-                return Move::new(word, 3);
+                return Move::new(anagram.clone(), 3);
             } else {
-                return Move::new(word, 6);
+                return Move::new(anagram.clone(), 6);
             }
         }
         // If its 6 characters
@@ -185,30 +167,30 @@ impl Anagrams {
         // otherwise place the word so the highest scoring letter is on element 10
         else if word.len() == 6 {
             if *highest_weighted_index == 0 {
-                return Move::new(word, 3);
+                return Move::new(anagram.clone(), 3);
             } else if *highest_weighted_index == 1 {
-                return Move::new(word, 2);
+                return Move::new(anagram.clone(), 2);
             } else if *highest_weighted_index == 5 {
-                return Move::new(word, 5);
+                return Move::new(anagram.clone(), 5);
             } else {
-                return Move::new(word, 4);
+                return Move::new(anagram.clone(), 4);
             }
         }
         // Otherwise, its 7 letters
         // Repeat the process for the first 3 and last 3 letters
         else {
             if *highest_weighted_index == 0 {
-                return Move::new(word, 3);
+                return Move::new(anagram.clone(), 3);
             } else if *highest_weighted_index == 1 {
-                return Move::new(word, 2);
+                return Move::new(anagram.clone(), 2);
             } else if *highest_weighted_index == 2 {
-                return Move::new(word, 1);
+                return Move::new(anagram.clone(), 1);
             } else if *highest_weighted_index == 5 {
-                return Move::new(word, 5);
+                return Move::new(anagram.clone(), 5);
             } else if *highest_weighted_index == 4 {
-                return Move::new(word, 4);
+                return Move::new(anagram.clone(), 4);
             } else {
-                return Move::new(word, 3);
+                return Move::new(anagram.clone(), 3);
             }
         }
     }

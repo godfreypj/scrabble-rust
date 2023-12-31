@@ -63,14 +63,6 @@ impl WeightedGroups {
         ];
         WeightedGroups { weighted_groups }
     }
-    pub fn get_weight(&self, letter: char) -> u32 {
-        for group in &self.weighted_groups {
-            if group.letters.contains(&letter) {
-                return group.weight;
-            }
-        }
-        0
-    }
 }
 
 

@@ -1,7 +1,4 @@
-use rack::Rack;
-use crate::{board::board::Board, agent::utils::{anagram::Anagrams, trieguy::TrieTree}};
-
-use super::{rack, utils::anagram::Move};
+use crate::{board::board::Board, agent::utils::{anagram::Anagrams, trieguy::TrieTree, legalmove::Move}, agent::rack::Rack};
 
 /// agent/agent.rs
 ///
@@ -27,7 +24,7 @@ impl Agent {
         // Read in the scrabble dictionary
         let mut tree = TrieTree::new();
         // Generate anagrams
-        let mut anagrams = Anagrams::new(self.rack.clone());
+        let mut anagrams = Anagrams::new();
         anagrams.generate("".to_string(), &mut self.rack.clone(), &mut tree);
         // Get the best move
         let best_move = anagrams.find_best_move();
