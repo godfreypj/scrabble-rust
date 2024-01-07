@@ -1,14 +1,8 @@
-// agent/trieguy.rs
-//
-// Module: Trie Guy
-// this module will read in the dictionary text provided and create a Trie Tree
-// of all the words for the agent to use when generating anagrams.
-
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::{BufReader, BufRead};
+use std::io::{BufRead, BufReader};
 
-/// ## Overview
+/// # TrieNode
 /// Each node of the TrieGuy contains a child, or it
 /// contains the end of the word boolean set to true.
 /// The children are stored in a HashMap.
@@ -26,6 +20,12 @@ impl TrieNode {
     }
 }
 
+/// # TrieTree
+/// A TrieTree is a data structure that loads up the dictionary
+/// of scrabble words. It's a convenient data struct for generating
+/// anagrams because it allows for quick lookups.
+/// Functions:
+/// - `load_dictionoary()`, `insert()`, `search()`
 pub(crate) struct TrieTree {
     pub root: Box<TrieNode>,
 }
@@ -38,16 +38,11 @@ impl TrieTree {
         }
     }
 
-    /// Instantiates the Trie Tree from a text file.
-    /// ## Overview
+    /// ### load_dictionary()
     /// Given a text file this function will open and
     /// create a new reader object. It will then iterate
     /// over each line and convert it to a String. It will
-    /// then pass the word into the insert function.
-    /// # Arguments
-    /// * `filename`: The path and name of the text file to be read.
-    /// # Returns
-    /// * `root`: The root node of the trie.
+    /// then pass the word into the `insert()` function.
     fn load_dictionary(filename: &str) -> TrieNode {
         let file = File::open(filename).expect("Failed to open dictionary file");
         let reader = BufReader::new(file);
@@ -59,15 +54,11 @@ impl TrieTree {
         root
     }
 
-    /// Inserts a given word into the trie data structure.
-    /// ## Overview
+    /// ### insert()
     /// This function iterates over a given letter, for each
-    /// letter, it checks if the letter is in the trie. If 
-    /// it is not, it adds the letter to the trie. The last node
+    /// letter, it checks if the letter is in the tree. If
+    /// it is not, it adds the letter to the tree. The last node
     /// is marked as the end of the word.
-    /// # Arguments
-    /// * `root`: The root node of the trie.
-    /// * `word`: The word to be inserted.
     pub fn insert(root: &mut TrieNode, word: &str) {
         let mut node = root;
         for ch in word.chars() {
@@ -75,18 +66,12 @@ impl TrieTree {
         }
         node.is_end_of_word = true;
     }
-    
 
-    /// Searches for a given word in the trie.
-    /// ## Overview
-    /// given a word, iterate over each character
+    /// ### search()
+    /// Given a `word`, iterate over each character
     /// working your way down the tree. If the character
-    /// is not in the trie, return false. Otherwise 
-    /// return true.
-    /// # Arguments
-    /// * `word`: The word to be searched for.
-    /// # Returns
-    /// * `bool`: True if the word is in the trie, false otherwise.
+    /// is not in the tree, return `false`. Otherwise
+    /// return `true`.
     pub fn search(&mut self, word: &str) -> bool {
         let mut node = &self.root;
         for ch in word.chars() {

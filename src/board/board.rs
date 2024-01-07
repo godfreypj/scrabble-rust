@@ -1,43 +1,34 @@
-//board/board.rs
-
-// Module: The Board
-// Description: The Scrabble board to be solved. This is immutable and always
-// the same for every instance of our Agent. In fact, it's not even a whole
-// scrabble board because why waste the memory? The starting rack is 7 tiles,
-// the first move can only be horizontal, so the board is just the middle 13
-// squares of a standard Scrabble Board.
-
-use crate::agent::utils::anagram::Anagram;
-
+/// # Board
+/// The board represents the middle row of the Scrabble Board. It's a vector of "spaces"
+/// and the final score, which the agent sets.
+/// Functions:
+/// - `set_score()`, `display()`
 pub struct Board {
-    spaces: Vec<Option<char>>,
-  }
-  
-  impl Board {
+    pub spaces: Vec<Option<char>>,
+    pub score: u32,
+}
+
+impl Board {
     pub fn new() -> Board {
-      Board {
-        spaces: vec![
-            Option::None;
-            13
-        ],
-      }
+        Board {
+            spaces: vec![Option::None; 13],
+            score: 0,
+        }
+    }
+
+    pub fn set_score(&mut self, score: u32) {
+        self.score = score;
     }
 
     pub fn display(&self) {
         println!("\n\nBoard:");
         for space in &self.spaces {
             match space {
-                Some(c) => print!("{} ", c),
-                None => print!("| _ |")
+                Some(c) => print!("| {} |", c),
+                None => print!("| _ |"),
             }
         }
+        println!("\n\nScore: {:?}", self.score);
         println!("\n\n--\n");
     }
-    pub fn make_move(&mut self, anagram: &Anagram, mut starting_element: u32) {
-      let word = anagram.word.clone();
-      for letter in word.chars() {
-        self.spaces[starting_element as usize] = Some(letter);
-        starting_element += 1;
-      }
-    }
-  }
+}
